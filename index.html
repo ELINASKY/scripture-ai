@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scripture AI</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg">
+<style>
+:root{--bg:#0f1218;--panel:#181d27;--line:#273044;--txt:#e8ecf3;--mute:#8b95a8;--acc:#4da3ff;--ok:#38c172;--warn:#f0b429;--bad:#ef5350}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.45 system-ui,Segoe UI,Roboto,sans-serif}
+button,select,input{font:inherit;color:var(--txt);background:#202736;border:1px solid var(--line);border-radius:8px;padding:7px 11px}
+button{cursor:pointer}button:hover{border-color:var(--acc)}
+button.primary{background:var(--acc);color:#06121f;border-color:var(--acc);font-weight:600}
+button.rec{background:var(--bad);border-color:var(--bad);color:#fff;font-weight:600}
+header{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+header h1{font-size:16px;margin:0 auto 0 0}
+.pill{padding:3px 10px;border-radius:99px;font-size:12px;border:1px solid var(--line);color:var(--mute)}
+.pill.on{color:var(--ok);border-color:var(--ok)}.pill.off{color:var(--warn);border-color:var(--warn)}
+main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;padding:14px}
+@media(max-width:900px){main{grid-template-columns:1fr}}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);margin:0 0 10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.row input[type=text]{flex:1;min-width:140px}
+#transcript{height:130px;overflow:auto;background:#0c0f15;border-radius:8px;padding:8px;color:#c4cbd9}
+#interim{color:var(--mute);font-style:italic}
+#dets{display:flex;flex-direction:column;gap:8px;max-height:46vh;overflow:auto}
+.card{border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#141924}
+.card.shown{border-color:var(--ok)}
+.card b{font-size:15px}
+.badge{font-size:11px;padding:1px 8px;border-radius:99px;margin-left:6px;background:#202736;color:var(--mute)}
+.badge.auto{color:var(--ok)}.badge.suggest{color:var(--warn)}
+.card p{margin:5px 0 7px;color:#c4cbd9;font-size:13px}
+.card small{color:var(--mute)}
+.empty{color:var(--mute);padding:12px;text-align:center}
+#previewWrap{aspect-ratio:16/9;border-radius:8px;overflow:hidden;border:1px solid var(--line);background:repeating-conic-gradient(#222 0 25%,#2c2c2c 0 50%) 0 0/16px 16px}
+.screen{container-type:size;width:100%;height:100%;position:relative;color:#fff;font-family:Georgia,'Times New Roman',serif}
+.screen .body{position:absolute;inset:0 6cqw 12cqh;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.3;padding-top:4cqh}
+.screen .vn{font-size:.55em;vertical-align:super;color:#9fd0ff;font-family:system-ui,sans-serif}
+.screen .ref{position:absolute;left:0;right:0;bottom:4cqh;text-align:center;font:600 3cqw system-ui,sans-serif;color:#9fd0ff;letter-spacing:.04em}
+.screen.lower .body{inset:auto 4cqw 14cqh;display:block;background:rgba(10,14,24,.88);padding:2.2cqw 3cqw;border-radius:1.2cqw;text-align:left}
+.screen.lower .ref{bottom:4cqh;text-align:left;left:4cqw}
+body.output{background:transparent;overflow:hidden}
+body.output header,body.output main,body.output #loading{display:none}
+#out{position:fixed;inset:0}
+#loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9;color:var(--mute)}
+#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#202736;border:1px solid var(--warn);padding:9px 14px;border-radius:10px;display:none;z-index:10;max-width:90vw}
+label{color:var(--mute);font-size:13px;display:flex;gap:6px;align-items:center}
+kbd{background:#202736;border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:12px}
+</style>
+</head>
+<body>
+<div id="loading">Loading Bible and scripture engine…</div>
+<div id="out" class="screen" hidden></div>
+
+<header>
+  <h1>Scripture AI</h1>
+  <span id="netPill" class="pill">…</span>
+  <span id="micPill" class="pill">Mic off</span>
+  <select id="lang" title="Speech language">
+    <option value="en-GH">English (Ghana)</option>
+    <option value="en-NG">English (Nigeria)</option>
+    <option value="en-US">English (US)</option>
+    <option value="en-GB">English (UK)</option>
+  </select>
+  <button id="micBtn" class="primary">Start listening</button>
+  <button id="openOut">Open output window</button>
+</header>
+
+<main>
+  <div style="display:grid;gap:14px;align-content:start;min-width:0">
+    <section>
+      <h2>Live transcript</h2>
+      <div id="transcript"></div>
+      <div id="interim"></div>
+      <div class="row">
+        <input id="sim" type="text" placeholder="Type what the pastor says to test, e.g. turn to John chapter three verse sixteen">
+        <button id="simBtn">Test</button>
+      </div>
+    </section>
+    <section>
+      <h2>Detected scripture</h2>
+      <div id="dets"><div class="empty">Nothing detected yet. Start listening or type a test sentence above.</div></div>
+    </section>
+  </div>
+
+  <div style="display:grid;gap:14px;align-content:start;min-width:0">
+    <section>
+      <h2>Program (what the audience sees)</h2>
+      <div id="previewWrap"><div id="preview" class="screen"></div></div>
+      <div class="row">
+        <button id="prev">◀ Previous</button>
+        <button id="next" class="primary">Next ▶</button>
+        <button id="blank">Blank</button>
+        <label><input id="auto" type="checkbox" checked> Auto-display confident matches</label>
+      </div>
+      <div class="row">
+        <label>Layout
+          <select id="style"><option value="full">Full screen</option><option value="lower">Lower third</option></select>
+        </label>
+        <label>Background
+          <select id="bg"><option value="#000000">Black</option><option value="#00b140">Green (chroma key)</option><option value="transparent">Transparent</option></select>
+        </label>
+      </div>
+    </section>
+    <section>
+      <h2>Find a verse by hand</h2>
+      <div class="row" style="margin-top:0">
+        <input id="go" type="text" placeholder="John 3:16, Psalm 23, or type words from the verse">
+        <button id="goBtn">Show</button>
+      </div>
+      <div id="goMsg" style="color:var(--mute);margin-top:8px"></div>
+      <p style="color:var(--mute);font-size:12px;margin:10px 0 0">Shortcuts: <kbd>→</kbd> next · <kbd>←</kbd> previous · <kbd>B</kbd> blank</p>
+    </section>
+  </div>
+</main>
+<div id="toast"></div>
+
+<script src="scripture.js"></script>
+<script>
+(() => {
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const isOutput = location.hash === "#output";
+const bc = new BroadcastChannel("scripture-ai");
+const { Bible, ScriptureEngine, QuoteMatcher, parseReferences, formatRef } = ScriptureAI;
+const S = { cur: null, blank: true, style: "full", bg: "#000000", auto: true };
+let bible, matcher, engine;
+
+/* ---------- drawing a screen (used by preview and output window) ---------- */
+function paint(el, st) {
+  el.className = "screen " + st.style;
+  el.style.background = st.bg;
+  if (st.blank || !st.verses.length) { el.innerHTML = ""; return; }
+  const n = st.verses.reduce((a, v) => a + v.t.length, 0);
+  const fs = st.style === "lower"
+    ? (n < 160 ? 2.7 : n < 260 ? 2.2 : 1.8)
+    : (n < 120 ? 5.4 : n < 220 ? 4.4 : n < 350 ? 3.5 : n < 500 ? 2.9 : 2.4);
+  const multi = st.verses.length > 1;
+  el.innerHTML = `<div class="body"><div style="font-size:${fs}cqw">${st.verses
+    .map((v) => (multi ? `<span class="vn">${v.v}</span> ` : "") + esc(v.t)).join(" ")}</div></div><div class="ref">${esc(st.label)} · ${esc(st.version)}</div>`;
+}
+
+if (isOutput) {
+  document.body.classList.add("output");
+  const out = $("#out"); out.hidden = false;
+  try { const saved = JSON.parse(localStorage.getItem("sai-state")); if (saved) paint(out, saved); } catch (e) {}
+  bc.onmessage = (m) => { if (m.data.type === "state") paint(out, m.data.st); };
+  bc.postMessage({ type: "hello" });
+  return;
+}
+
+/* ---------- passage window: which verses are on screen ---------- */
+function shownVerses() {
+  const c = S.cur; if (!c) return [];
+  const last = c.end ?? bible.verseCount(c.book, c.chapter);
+  const budget = S.style === "lower" ? 260 : 430;
+  const out = []; let chars = 0;
+  for (let v = c.start; v <= last; v++) {
+    const h = bible.getVerse(c.book, c.chapter, v); if (!h) break;
+    if (out.length && chars + h.text.length > budget) break;
+    out.push({ v, t: h.text }); chars += h.text.length;
+  }
+  return out;
+}
+function publish() {
+  const verses = shownVerses();
+  const st = {
+    blank: S.blank || !verses.length, style: S.style, bg: S.bg, verses, version: bible.id.toUpperCase(),
+    label: verses.length ? formatRef(S.cur.book, S.cur.chapter, verses[0].v, verses[verses.length - 1].v) : "",
+  };
+  paint($("#preview"), st);
+  $("#blank").textContent = st.blank ? "Unblank" : "Blank";
+  bc.postMessage({ type: "state", st });
+  try { localStorage.setItem("sai-state", JSON.stringify(st)); } catch (e) {}
+}
+function show(book, chapter, start, end) {
+  S.cur = { book, chapter, start: start || 1, end }; S.blank = false;
+  engine.setContext(book, chapter); publish();
+}
+function step(dir) {
+  const c = S.cur; if (!c) return;
+  const sv = shownVerses(); if (!sv.length) return;
+  if (dir > 0) {
+    const n = sv[sv.length - 1].v + 1;
+    if (n > bible.verseCount(c.book, c.chapter)) {
+      if (bible.verseCount(c.book, c.chapter + 1)) { c.chapter++; c.start = 1; } else return;
+    } else c.start = n;
+  } else c.start = Math.max(1, sv[0].v - 1);
+  c.end = undefined; S.blank = false; engine.setContext(c.book, c.chapter); publish();
+}
+
+/* ---------- detections ---------- */
+const dets = [];
+function showEvent(e) {
+  const single = e.verseStart !== undefined;
+  show(e.book, e.chapter, e.verseStart, single ? (e.verseEnd || e.verseStart) : undefined);
+  e._shown = true; renderDets();
+}
+function renderDets() {
+  const box = $("#dets");
+  if (!dets.length) return;
+  box.innerHTML = "";
+  dets.forEach((e, i) => {
+    const d = document.createElement("div");
+    d.className = "card" + (e._shown ? " shown" : "");
+    const preview = e.verses.slice(0, 2).map((v) => v.text).join(" ");
+    const how = e.kind === "quote" ? "recognised from the words" : e.source === "context" ? "from context" : "reference spoken";
+    d.innerHTML = `<b>${esc(e.label)}</b><span class="badge ${e.action}">${Math.round(e.confidence * 100)}% · ${e.action}</span><span class="badge">${how}</span>
+      <p>${esc(preview.length > 170 ? preview.slice(0, 170) + "…" : preview)}</p>
+      <small>heard: “${esc(e.heard)}”${e.alternatives && e.alternatives.length ? " · also possible: " + esc(e.alternatives.join(", ")) : ""}</small>
+      <div class="row" style="margin-top:6px"><button class="primary" data-a="show" data-i="${i}">Show</button><button data-a="drop" data-i="${i}">Dismiss</button></div>`;
+    box.appendChild(d);
+  });
+}
+$("#dets").addEventListener("click", (ev) => {
+  const b = ev.target.closest("button"); if (!b) return;
+  const i = +b.dataset.i;
+  if (b.dataset.a === "show") showEvent(dets[i]); else { dets.splice(i, 1); if (!dets.length) $("#dets").innerHTML = '<div class="empty">No detections.</div>'; else renderDets(); }
+});
+
+/* ---------- feeding the engine ---------- */
+function addTranscript(t) {
+  const d = document.createElement("div"); d.textContent = t; const tr = $("#transcript");
+  tr.appendChild(d); tr.scrollTop = tr.scrollHeight;
+  while (tr.children.length > 60) tr.removeChild(tr.firstChild);
+}
+function feed(text, final) { engine.feed(text, final); }
+$("#simBtn").onclick = sim; $("#sim").onkeydown = (e) => { if (e.key === "Enter") sim(); };
+function sim() { const t = $("#sim").value.trim(); if (!t) return; addTranscript(t); feed(t, true); $("#sim").value = ""; }
+
+/* ---------- microphone / speech recognition ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, listening = false;
+function toast(msg, ms = 5000) { const t = $("#toast"); t.textContent = msg; t.style.display = "block"; clearTimeout(toast.h); toast.h = setTimeout(() => (t.style.display = "none"), ms); }
+function setMicUI() {
+  $("#micBtn").textContent = listening ? "Stop listening" : "Start listening";
+  $("#micBtn").className = listening ? "rec" : "primary";
+  $("#micPill").textContent = listening ? "● Listening" : "Mic off";
+  $("#micPill").className = "pill" + (listening ? " on" : "");
+}
+function startMic() {
+  if (!SR) return toast("This browser has no speech recognition. Please use Chrome or Edge.");
+  if (!navigator.onLine) toast("Browser speech recognition needs internet. Offline speech arrives with the desktop version (Whisper). You can still type test sentences.", 8000);
+  rec = new SR(); rec.continuous = true; rec.interimResults = true; rec.lang = $("#lang").value;
+  rec.onresult = (ev) => {
+    let interim = "";
+    for (let i = ev.resultIndex; i < ev.results.length; i++) {
+      const r = ev.results[i], t = r[0].transcript.trim();
+      if (r.isFinal) { addTranscript(t); feed(t, true); } else interim += " " + t;
+    }
+    interim = interim.trim(); $("#interim").textContent = interim; if (interim) feed(interim, false);
+  };
+  rec.onend = () => { if (listening) { try { rec.start(); } catch (e) {} } };
+  rec.onerror = (e) => {
+    if (e.error === "not-allowed" || e.error === "service-not-allowed") { listening = false; setMicUI(); toast("Microphone blocked. Allow microphone access in the browser address bar."); }
+    else if (e.error === "network") toast("Speech service unreachable (no internet).");
+  };
+  listening = true; setMicUI(); try { rec.start(); } catch (e) {}
+}
+function stopMic() { listening = false; if (rec) rec.stop(); $("#interim").textContent = ""; setMicUI(); }
+$("#micBtn").onclick = () => (listening ? stopMic() : startMic());
+$("#lang").onchange = () => { if (listening) { stopMic(); startMic(); } };
+
+/* ---------- controls ---------- */
+$("#next").onclick = () => step(1); $("#prev").onclick = () => step(-1);
+$("#blank").onclick = () => { S.blank = !S.blank; publish(); };
+$("#auto").onchange = (e) => (S.auto = e.target.checked);
+$("#style").onchange = (e) => { S.style = e.target.value; publish(); };
+$("#bg").onchange = (e) => { S.bg = e.target.value; publish(); };
+$("#openOut").onclick = () => window.open(location.href.split("#")[0] + "#output", "sai-out", "popup,width=1280,height=720");
+bc.onmessage = (m) => { if (m.data.type === "hello") publish(); };
+document.addEventListener("keydown", (e) => {
+  if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+  if (e.key === "ArrowRight") step(1); else if (e.key === "ArrowLeft") step(-1);
+  else if (e.key.toLowerCase() === "b") { S.blank = !S.blank; publish(); }
+});
+function go() {
+  const t = $("#go").value.trim(); if (!t) return;
+  const r = parseReferences(t).full[0];
+  if (r) { show(r.bookId, r.chapter, r.verseStart, r.verseStart ? (r.verseEnd || r.verseStart) : undefined); $("#goMsg").textContent = ""; return; }
+  const q = matcher.find(t, { minWords: 3, threshold: 0.4 });
+  if (q && q.score >= 0.7) { show(q.book, q.chapter, q.verse, q.verse); $("#goMsg").textContent = `Matched ${formatRef(q.book, q.chapter, q.verse)} (${Math.round(q.score * 100)}%)`; }
+  else if (q) { $("#goMsg").textContent = `Not sure. Closest is ${formatRef(q.book, q.chapter, q.verse)} (${Math.round(q.score * 100)}%), not shown. The loaded Bible is KJV, so modern wording may not match.`; }
+  else $("#goMsg").textContent = "No match. Try a reference like John 3:16, or more words from the verse.";
+}
+$("#goBtn").onclick = go; $("#go").onkeydown = (e) => { if (e.key === "Enter") go(); };
+
+/* ---------- online / offline indicator ---------- */
+function net() { const on = navigator.onLine; $("#netPill").textContent = on ? "Online" : "Offline mode"; $("#netPill").className = "pill " + (on ? "on" : "off"); }
+addEventListener("online", net); addEventListener("offline", net); net();
+
+/* ---------- start ---------- */
+(async () => {
+  try {
+    const file = await (await fetch("kjv.json")).json();
+    bible = new Bible(file); matcher = new QuoteMatcher(bible); engine = new ScriptureEngine(bible, matcher);
+  } catch (e) {
+    $("#loading").textContent = "Could not load kjv.json. Open this app through a web address (GitHub Pages or a local server), not by double-clicking the file.";
+    return;
+  }
+  engine.onDetection((e) => {
+    dets.unshift(e); if (dets.length > 30) dets.pop();
+    if (S.auto && e.action === "auto") showEvent(e); else renderDets();
+  });
+  $("#loading").style.display = "none";
+  publish(); setMicUI();
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("sw.js").catch(() => {});
+})();
+})();
+</script>
+</body>
+</html>
