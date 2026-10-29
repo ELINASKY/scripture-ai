@@ -69,6 +69,9 @@ kbd{background:#202736;border:1px solid var(--line);border-radius:4px;padding:0 
     <option value="en-US">English (US)</option>
     <option value="en-GB">English (UK)</option>
   </select>
+  <select id="ver" title="Bible translation shown on screen"></select>
+  <button id="verImport" title="Add a Bible you have the right to use">Import Bible</button>
+  <input id="verFile" type="file" accept="application/json,.json" hidden>
   <button id="micBtn" class="primary">Start listening</button>
   <button id="openOut">Open output window</button>
 </header>
@@ -156,6 +159,8 @@ const bc = new BroadcastChannel("scripture-ai");
 const { Bible, ScriptureEngine, QuoteMatcher, parseReferences, formatRef } = ScriptureAI;
 const S = { cur: null, blank: true, style: "full", bg: "#000000", auto: true };
 let bible, matcher, engine;
+const bibles = {}, matchers = {};
+const FILES = { kjv: "kjv.json", bbe: "bbe.json" };
 
 /* ---------- drawing a screen (used by preview and output window) ---------- */
 function paint(el, st) {
@@ -485,11 +490,55 @@ document.addEventListener("keydown", (e) => {
 function net() { const on = navigator.onLine; $("#netPill").textContent = on ? "Online" : "Offline mode"; $("#netPill").className = "pill " + (on ? "on" : "off"); }
 addEventListener("online", net); addEventListener("offline", net); net();
 
+/* ---------- translations ---------- */
+const addBible = (file) => (bibles[file.id] = new Bible(file));
+const indexBible = (id) => { if (!matchers[id]) matchers[id] = new QuoteMatcher(bibles[id]); };
+// quotes are matched against every loaded translation, then shown in the selected one
+const multi = { find: (t, o) => { let best = null; for (const k in matchers) { const r = matchers[k].find(t, o); if (r && (!best || r.score > best.score)) best = r; } return best; } };
+function fillVer() { $("#ver").innerHTML = Object.values(bibles).map((b) => `<option value="${b.id}">${esc(b.id.toUpperCase())} · ${esc(b.name)}</option>`).join(""); if (bible) $("#ver").value = bible.id; }
+function useBible(id) {
+  if (!bibles[id]) return;
+  bible = bibles[id]; engine.setBible(bible); $("#ver").value = id;
+  try { localStorage.setItem("sai-ver", id); } catch (e) {}
+  if (S.cur || S.deck) publish();
+}
+$("#ver").onchange = (e) => useBible(e.target.value);
+const dbOpen = () => new Promise((res, rej) => { const r = indexedDB.open("sai", 1); r.onupgradeneeded = () => r.result.createObjectStore("bibles", { keyPath: "id" }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+async function dbAll() { try { const db = await dbOpen(); return await new Promise((res, rej) => { const q = db.transaction("bibles").objectStore("bibles").getAll(); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }); } catch (e) { return []; } }
+async function dbPut(rec) { const db = await dbOpen(); return new Promise((res, rej) => { const t = db.transaction("bibles", "readwrite"); t.objectStore("bibles").put(rec); t.oncomplete = res; t.onerror = () => rej(t.error); }); }
+$("#verImport").onclick = () => $("#verFile").click();
+$("#verFile").onchange = async (e) => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  try {
+    const raw = JSON.parse((await f.text()).replace(/^\uFEFF/, "")); let verses;
+    if (raw && Array.isArray(raw.verses)) verses = raw.verses;
+    else if (Array.isArray(raw) && raw.length === 66) { verses = []; raw.forEach((bk, b) => bk.chapters.forEach((ch, c) => ch.forEach((t, v) => verses.push([b + 1, c + 1, v + 1, String(t).replace(/\{[^}]*\}/g, "").trim()])))); }
+    else throw 0;
+    if (verses.length < 20000) throw 0;
+    const short = (prompt("Short name for this Bible (for example NIV). Only import Bibles you have the right to use.", "") || "").trim();
+    if (!short) return;
+    let id = short.toLowerCase().replace(/[^a-z0-9]/g, "") || "custom"; if (FILES[id]) id += "2";
+    const rec = { id, name: short + " (imported)", license: "imported by user", verses };
+    await dbPut(rec); delete matchers[id]; addBible(rec); fillVer(); useBible(id);
+    toast("Imported " + short + ". It is saved in this browser and used for quote recognition too.");
+    setTimeout(() => indexBible(id), 50);
+  } catch (err) { toast("That file is not a full Bible in a supported format (JSON with all 66 books)."); }
+};
+
 /* ---------- start ---------- */
 (async () => {
   try {
-    const file = await (await fetch("kjv.json")).json();
-    bible = new Bible(file); matcher = new QuoteMatcher(bible); engine = new ScriptureEngine(bible, matcher);
+    let saved = "kjv"; try { saved = localStorage.getItem("sai-ver") || "kjv"; } catch (e) {}
+    const startId = FILES[saved] ? saved : "kjv";
+    bible = addBible(await (await fetch(FILES[startId])).json()); indexBible(bible.id);
+    matcher = multi; engine = new ScriptureEngine(bible, multi); fillVer();
+    // load the remaining translations in the background
+    (async () => {
+      for (const id in FILES) { if (bibles[id]) continue; try { addBible(await (await fetch(FILES[id])).json()); } catch (e) {} }
+      for (const rec of await dbAll()) addBible(rec);
+      fillVer(); if (bibles[saved] && bible.id !== saved) useBible(saved);
+      for (const id in bibles) { await new Promise((r) => setTimeout(r, 30)); indexBible(id); }
+    })();
   } catch (e) {
     $("#loading").textContent = "Could not load kjv.json. Open this app through a web address (GitHub Pages or a local server), not by double-clicking the file.";
     return;
