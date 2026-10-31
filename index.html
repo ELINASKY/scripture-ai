@@ -53,6 +53,45 @@ label{color:var(--mute);font-size:13px;display:flex;gap:6px;align-items:center}
 #meterLabel{font-size:12px;color:var(--mute);flex-basis:100%}
 textarea{width:100%;font:inherit;color:var(--txt);background:#202736;border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:8px}
 kbd{background:#202736;border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:12px}
+body:not(.mix) #mixer{display:none}body.mix #pres{display:none}
+
+/* vMix-style mixer */
+body.mix{--bg:#1a1a1a;--panel:#262626;--line:#3b3b3b;--txt:#e6e6e6;--mute:#9a9a9a;background:#1a1a1a;font-size:13px}
+body.mix header{background:#2d2d2d}
+body.mix button,body.mix select{background:linear-gradient(#4b4b4b,#393939);border:1px solid #5a5a5a;border-radius:3px;padding:5px 12px;color:#eee}
+body.mix button:hover:not(:disabled){background:linear-gradient(#5c5c5c,#464646);border-color:#8a8a8a}
+body.mix button:disabled{opacity:.4;cursor:default}
+body.mix button.primary{background:linear-gradient(#3b78b5,#2a5a8c);border-color:#5b9bd5}
+body.mix button.on{background:linear-gradient(#2f9e44,#1f7a32);border-color:#4cc464}
+body.mix button.rec{background:linear-gradient(#e03131,#a61e1e);border-color:#ff6b6b;color:#fff}
+#mixer{grid-template-columns:1fr;grid-template-rows:auto auto auto minmax(150px,1fr) auto;gap:0;padding:0;min-height:calc(100vh - 54px);background:#1a1a1a}
+.vtool{display:flex;gap:6px;align-items:center;padding:6px 10px;background:#2b2b2b;border-bottom:1px solid #111}
+.sep{width:1px;height:22px;background:#4a4a4a;margin:0 6px}
+.vmon{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px 10px;background:#141414}
+.mon{border:2px solid #444;border-radius:2px;background:#000;min-width:0}.mon.pre{border-color:#2f9e44}.mon.pgm{border-color:#d63a3a}
+.mh{font-size:12px;padding:3px 8px;background:#262626;color:#ddd}.mh span{color:#9a9a9a}
+.mv2{height:34vh;background:#000}.mv2 canvas{width:100%;height:100%;object-fit:contain;display:block}
+.vtrans{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding:8px 10px;background:#2b2b2b;border-top:1px solid #111;border-bottom:1px solid #111}
+.grp{display:flex;gap:6px;align-items:center}.lbl{color:#9a9a9a;font-size:12px}button.big{min-width:78px;padding:8px 16px;font-weight:600}
+.vtiles{display:flex;gap:8px;overflow-x:auto;padding:8px 10px;align-items:flex-start;background:#1f1f1f}
+.vtiles .empty{width:100%}
+.tile{width:196px;flex:0 0 auto;background:#2a2a2a;border:2px solid #444}.tile.pre{border-color:#2f9e44}.tile.pgm{border-color:#d63a3a}
+.th{display:flex;gap:6px;align-items:center;padding:3px 6px;background:#222;font-size:12px}.th b{background:#444;padding:0 6px;border-radius:2px}.th span{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.th i{font-style:normal;cursor:pointer;color:#aaa;padding:0 4px}.th i:hover{color:#ff6b6b}
+.tv{aspect-ratio:16/9;background:#000;cursor:pointer}.thumb{width:100%;height:100%;object-fit:contain;display:block}
+.tb{display:flex;gap:3px;padding:4px}.tb button{flex:1;padding:3px 4px;font-size:11px}.tile input[type=range]{width:calc(100% - 8px);margin:0 4px 5px}
+.vstat{display:flex;gap:18px;padding:3px 10px;background:#111;color:#9a9a9a;font-size:12px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:20}.modal[hidden]{display:none}
+.dlg{background:#2b2b2b;border:1px solid #666;width:min(680px,96vw);color:#e6e6e6;box-shadow:0 10px 40px #000}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#222;font-weight:600}
+.db{display:grid;grid-template-columns:200px 1fr;min-height:260px}.dl{background:#232323;display:flex;flex-direction:column}
+.dl button{border-radius:0!important;text-align:left;border:0!important;border-bottom:1px solid #333!important;background:#232323!important;padding:10px 12px!important}.dl button.on{background:#3b78b5!important}
+.dr{padding:14px}.fld{display:flex;flex-direction:column;gap:3px;margin-top:10px;color:#9a9a9a;font-size:12px}.fld select{width:100%}
+.dest{display:grid;grid-template-columns:24px 120px 1fr 1fr;gap:6px;margin-bottom:6px;align-items:center}
+body.mix #lang,body.mix #ver,body.mix #verImport,body.mix #openOut{display:none}
+.fld{text-align:left}
+.meter{width:90px;height:10px;background:#111;border:1px solid #444;overflow:hidden}.meter i{display:block;height:100%;width:0;background:#2f9e44}.meter.sm{width:auto;height:6px;margin:0 4px 4px}
+.sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px;max-height:250px;overflow:auto}.sc{border:1px solid #555;cursor:pointer;background:#222;font-size:11px}.sc:hover{border-color:#4b8bd0}.sc img{width:100%;display:block}.sc span{display:block;padding:3px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.mix #mixer .vtrans button.on{background:linear-gradient(#2f9e44,#1f7a32)}
 </style>
 </head>
 <body>
@@ -61,6 +100,7 @@ kbd{background:#202736;border:1px solid var(--line);border-radius:4px;padding:0 
 
 <header>
   <h1>Scripture AI</h1>
+  <button id="tabPres" class="primary">Presentation</button><button id="tabMix">Video mixer</button>
   <span id="netPill" class="pill">…</span>
   <span id="micPill" class="pill">Mic off</span>
   <select id="lang" title="Speech language">
@@ -76,7 +116,7 @@ kbd{background:#202736;border:1px solid var(--line);border-radius:4px;padding:0 
   <button id="openOut">Open output window</button>
 </header>
 
-<main>
+<main id="pres">
   <div style="display:grid;gap:14px;align-content:start;min-width:0">
     <section>
       <h2>Live transcript</h2>
@@ -108,6 +148,7 @@ kbd{background:#202736;border:1px solid var(--line);border-radius:4px;padding:0 
         <button id="blank">Blank</button>
         <label><input id="auto" type="checkbox" checked> Auto-display confident matches</label>
       </div>
+      <p id="obsHint" style="color:var(--mute);font-size:12px;margin:8px 0 0" hidden></p>
       <div class="row">
         <label>Layout
           <select id="style"><option value="full">Full screen</option><option value="lower">Lower third</option></select>
@@ -147,6 +188,64 @@ kbd{background:#202736;border:1px solid var(--line);border-radius:4px;padding:0 
     </section>
   </div>
 </main>
+<main id="mixer">
+  <div class="vtool">
+    <button id="addInput">＋ Add Input</button><span class="sep"></span>
+    <button id="mRec">● Record</button>
+    <button id="mStream">Stream</button><button id="mStreamCfg" title="Streaming settings">⚙ Settings</button><span class="sep"></span>
+    <button id="mWin">Output window</button><button id="mFull">Fullscreen</button>
+  </div>
+  <div class="vmon">
+    <div class="mon pre"><div class="mh">Preview <span id="preName"></span></div><div class="mv2"><canvas id="preCanvas" width="640" height="360"></canvas></div></div>
+    <div class="mon pgm"><div class="mh">Output <span id="pgmName"></span></div><div class="mv2"><canvas id="pgmCanvas" width="1280" height="720"></canvas></div></div>
+  </div>
+  <div class="vtrans">
+    <div class="grp"><button id="mCut" class="big">Cut</button><button id="mFade" class="big">Fade</button>
+      <select id="mDur" title="Fade length"><option value="300">0.3 s</option><option value="600" selected>0.6 s</option><option value="1000">1 s</option><option value="2000">2 s</option></select>
+      <button id="mFtb" title="Fade to black">FTB</button></div>
+    <div class="grp"><span class="lbl">Overlay</span><button id="ov1" class="on" title="Scripture and lyrics from the Presentation tab">1 · Scripture</button><button id="ov2">2 · Logo</button><button id="ov3">3 · Countdown</button><button id="ov4">4 · Name</button><button id="ovCfg" title="Overlay settings">⚙</button></div>
+    <div class="grp"><span class="lbl">Master</span><input id="mVol" type="range" min="0" max="100" value="100" style="width:90px"><div class="meter"><i id="mMeter"></i></div><label class="lbl" style="display:flex;gap:4px;align-items:center"><input id="mMon" type="checkbox"> Monitor</label></div>
+    <div class="grp lbl" title="Keyboard"><kbd>1-9</kbd> preview &nbsp;<kbd>Enter</kbd> cut &nbsp;<kbd>F</kbd> fade</div>
+  </div>
+  <div class="vtiles" id="srcList"></div>
+  <div class="vstat"><span id="sFps">FPS 30</span><span id="sRes">1280×720</span><span id="mRecInfo"></span><span id="sStream"></span><span style="flex:1"></span><span id="sSrc">0 inputs</span></div>
+</main>
+<div class="modal" id="addModal" hidden><div class="dlg">
+  <div class="dh">Add Input<button data-close>✕</button></div>
+  <div class="db">
+    <div class="dl"><button data-t="cam" class="on">Camera / Capture card</button><button data-t="scr">Screen capture</button><button data-t="file">Video / Image</button><button data-t="ip">IP camera (RTSP)</button><button data-t="ph">Phone camera</button></div>
+    <div class="dr">
+      <div data-p="cam"><div class="row" style="margin-top:0"><button id="camFind">Find cameras</button></div>
+        <label class="fld">Video<select id="camSel"></select></label><label class="fld">Audio<select id="audSel"><option value="">No audio from this source</option></select></label>
+        <div class="row"><button id="camAdd" class="primary">Add</button></div></div>
+      <div data-p="scr" hidden><div id="scrWeb"><p>Share your whole screen or a window as an input.</p><button id="scrAdd" class="primary">Choose screen…</button></div>
+        <div id="scrDesk" hidden><button id="scrList">List screens and windows</button><label class="fld" style="flex-direction:row;gap:6px;align-items:center"><input type="checkbox" id="scrAud"> Include computer sound (Windows, whole screens only)</label><div id="scrGrid" class="sgrid"></div></div></div>
+      <div data-p="file" hidden><p>Add a video or image file (a countdown, a background loop, a logo).</p><button id="fileAdd" class="primary">Choose file…</button><input id="fileIn" type="file" accept="video/*,image/*" hidden></div>
+      <div data-p="ip" hidden><div id="ipDesk"><label class="fld">Name<input id="ipName" type="text" value="IP camera"></label><label class="fld">Stream address<input id="ipUrl" type="text" placeholder="rtsp://user:password@192.168.1.64:554/stream1"></label><div class="row"><button id="ipAdd" class="primary">Add</button></div><p style="color:#9a9a9a;font-size:12px">The address is in your camera’s manual (often ends in /stream1 or /live). Picture only for now, no sound. If the camera drops out it reconnects by itself.</p></div><p id="ipWeb" hidden>IP cameras need the desktop app.</p></div>
+      <div data-p="ph" hidden><div id="phDesk"><p style="margin-top:0">Use a phone as a camera. It must be on the <b>same Wi-Fi</b> as this computer.</p><button id="phMake" class="primary">Create phone link</button>
+        <div id="phBox" hidden style="text-align:center;margin-top:10px"><img id="phQr" width="170" height="170" alt="QR code" style="background:#fff"><div id="phUrl" style="font-size:11px;word-break:break-all;user-select:all;margin-top:6px"></div>
+        <p style="color:#9a9a9a;font-size:12px">Scan with the phone’s camera, accept the security warning once (the page only exists on your own network), then tap Start camera. If Windows asks about network access, choose Allow.</p></div></div><p id="phWeb" hidden>Phone cameras need the desktop app.</p></div>
+    </div>
+  </div>
+</div></div>
+<div class="modal" id="strModal" hidden><div class="dlg" style="width:min(760px,96vw)">
+  <div class="dh">Streaming settings<button data-close>✕</button></div>
+  <div style="padding:14px">
+    <p id="strNote" style="color:#ffb74d;margin:0 0 10px" hidden></p>
+    <div id="dests"></div>
+    <p style="color:#9a9a9a;font-size:12px;margin:8px 0">Paste the server URL and stream key from each platform’s live-streaming page. Twitch shows a list of nearby servers to choose from. Stream keys are saved on this PC only, so treat them like passwords.</p>
+    <div class="row"><label class="fld" style="display:inline-flex;gap:6px;align-items:center">Bitrate <select id="strQ"><option value="1500">1500 kbps (slow internet)</option><option value="2500">2500 kbps (720p, recommended)</option><option value="4000">4000 kbps (720p, better)</option><option value="6000">6000 kbps (1080p)</option></select></label>
+      <label class="fld" style="display:inline-flex;gap:6px;align-items:center">Frame rate <select id="strFps"><option>30</option><option>25</option></select></label>
+      <label class="fld" style="display:inline-flex;gap:6px;align-items:center">Resolution <select id="mRes"><option value="1280x720">720p</option><option value="1920x1080">1080p</option></select></label></div>
+    <p style="color:#9a9a9a;font-size:12px;margin:8px 0">Your internet upload speed should be at least 1.5 times the bitrate, multiplied by the number of destinations you turn on.</p>
+    <div class="row"><button id="strSave">Save</button><button id="strGo" class="primary">Save &amp; start streaming</button></div>
+  </div>
+</div></div>
+<div class="modal" id="ovModal" hidden><div class="dlg" style="width:min(580px,96vw)"><div class="dh">Overlays<button data-close>✕</button></div><div style="padding:14px;display:grid;gap:16px">
+  <div><b>2 · Logo</b><div class="row"><button id="logoPick">Choose image…</button><input id="logoIn" type="file" accept="image/*" hidden><select id="logoPos"><option value="tr">Top right</option><option value="tl">Top left</option><option value="br">Bottom right</option><option value="bl">Bottom left</option></select><select id="logoSize"><option value="10">Small</option><option value="15" selected>Medium</option><option value="22">Large</option></select></div></div>
+  <div><b>3 · Countdown</b><div class="row"><input id="cdLabel" type="text" placeholder="Label, for example: Service starts in" style="flex:1"><input id="cdMin" type="number" min="1" max="180" value="10" style="width:70px"><span>min</span><button id="cdStart">Start</button><button id="cdReset">Reset</button></div></div>
+  <div><b>4 · Name and title</b><div class="row"><input id="nmName" type="text" placeholder="Name" style="flex:1"><input id="nmTitle" type="text" placeholder="Title or role" style="flex:1"></div></div>
+  <p style="color:#9a9a9a;font-size:12px;margin:0">Switch each overlay on or off with the numbered buttons in the mixer.</p></div></div></div>
 <div id="toast"></div>
 
 <script src="scripture.js"></script>
@@ -157,10 +256,12 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&l
 const isOutput = location.hash === "#output";
 const bc = new BroadcastChannel("scripture-ai");
 const { Bible, ScriptureEngine, QuoteMatcher, parseReferences, formatRef } = ScriptureAI;
+let lastSt = null;
 const S = { cur: null, blank: true, style: "full", bg: "#000000", auto: true };
 let bible, matcher, engine;
 const bibles = {}, matchers = {};
-const FILES = { kjv: "kjv.json", bbe: "bbe.json" };
+const FILES = { kjv: "kjv.json", bbe: "bbe.json", asv: "asv.json", web: "web.json" };
+const INDEX_SKIP = new Set(["asv"]); // ASV wording is almost the same as KJV, so it is shown but not used for quote matching (saves memory)
 
 /* ---------- drawing a screen (used by preview and output window) ---------- */
 function paint(el, st) {
@@ -182,12 +283,21 @@ function paint(el, st) {
     .map((v) => (multi ? `<span class="vn">${v.v}</span> ` : "") + esc(v.t)).join(" ")}</div></div><div class="ref">${esc(st.label)} · ${esc(st.version)}</div>`;
 }
 
+if (location.hash === "#program") {
+  document.body.classList.add("output");
+  const v = document.createElement("video"); v.autoplay = true; v.muted = true;
+  v.style.cssText = "position:fixed;inset:0;width:100%;height:100%;object-fit:contain;background:#000";
+  document.body.appendChild(v); try { v.srcObject = window.opener.SAI_STREAM; } catch (e) {}
+  return;
+}
 if (isOutput) {
   document.body.classList.add("output");
   const out = $("#out"); out.hidden = false;
   try { const saved = JSON.parse(localStorage.getItem("sai-state")); if (saved) paint(out, saved); } catch (e) {}
   bc.onmessage = (m) => { if (m.data.type === "state") paint(out, m.data.st); };
   bc.postMessage({ type: "hello" });
+  // desktop version: also listen to the local server so vMix / OBS Browser Sources receive updates
+  if (location.hostname === "127.0.0.1" && window.EventSource) new EventSource("/state-stream").onmessage = (m) => { try { paint(out, JSON.parse(m.data)); } catch (e) {} };
   return;
 }
 
@@ -217,9 +327,11 @@ function publish() {
   send(st);
 }
 function send(st) {
+  lastSt = st;
   paint($("#preview"), st);
   $("#blank").textContent = st.blank ? "Unblank" : "Blank";
   bc.postMessage({ type: "state", st });
+  if (location.hostname === "127.0.0.1") fetch("/state", { method: "POST", body: JSON.stringify(st) }).catch(() => {});
   try { localStorage.setItem("sai-state", JSON.stringify(st)); } catch (e) {}
 }
 function show(book, chapter, start, end) {
@@ -308,7 +420,7 @@ function startMic() {
   rec.onend = () => { if (listening) { try { rec.start(); } catch (e) {} } };
   rec.onerror = (e) => {
     if (e.error === "not-allowed" || e.error === "service-not-allowed") { listening = false; setMicUI(); toast("Microphone blocked. Allow microphone access in the browser address bar."); }
-    else if (e.error === "network") toast("Speech service unreachable (no internet).");
+    else if (e.error === "network") toast(location.hostname === "127.0.0.1" ? "Voice recognition is not in the installed version yet (offline Whisper is the next update). Typing, verses, songs and the output link all work. Use the web version for voice until then." : "Speech service unreachable (no internet).", 9000);
   };
   listening = true; setMicUI(); try { rec.start(); } catch (e) {}
 }
@@ -486,13 +598,354 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "PageDown") { e.preventDefault(); goPlan(planAt + 1); } else if (e.key === "PageUp") { e.preventDefault(); goPlan(planAt - 1); }
 });
 
+/* ---------- video mixer (vMix-style) ---------- */
+const M = { src: [], pre: null, pgm: null, fade: null, overlay: true, ftb: false, ftbA: 0, ac: null, dest: null, rec: null, str: null, n: 0, frames: 0 };
+window.SAI_M = M;
+const DESK = location.hostname === "127.0.0.1";
+const pgmC = $("#pgmCanvas"), preC = $("#preCanvas");
+window.SAI_STREAM = pgmC.captureStream(30);
+const audioInit = () => {
+  if (M.ac) return; M.ac = new (window.AudioContext || window.webkitAudioContext)(); M.dest = M.ac.createMediaStreamDestination();
+  M.mix = M.ac.createGain(); M.mix.connect(M.dest); M.masterAn = M.ac.createAnalyser(); M.masterAn.fftSize = 512; M.mix.connect(M.masterAn);
+  // a silent tone keeps audio samples flowing, otherwise the recorder writes nothing until a real sound arrives
+  const o = M.ac.createOscillator(), g = M.ac.createGain(); g.gain.value = 0; o.connect(g); g.connect(M.dest); o.start();
+};
+document.addEventListener("click", () => { if (M.ac && M.ac.state === "suspended") M.ac.resume(); });
+function setTab(m) { document.body.classList.toggle("mix", m); $("#tabMix").className = m ? "primary" : ""; $("#tabPres").className = m ? "" : "primary"; }
+$("#tabMix").onclick = () => setTab(true); $("#tabPres").onclick = () => setTab(false);
+
+/* inputs */
+function addSource(name, el, stream) {
+  const s = { id: ++M.n, name, el, stream, gain: null, vol: 1, muted: false };
+  const tracks = stream ? stream.getAudioTracks() : [];
+  if (tracks.length || (!stream && el.tagName === "VIDEO")) {
+    try {
+      audioInit();
+      const node = stream ? M.ac.createMediaStreamSource(new MediaStream(tracks)) : M.ac.createMediaElementSource(el);
+      s.gain = M.ac.createGain(); node.connect(s.gain); s.gain.connect(M.mix); s.an = M.ac.createAnalyser(); s.an.fftSize = 512; s.gain.connect(s.an);
+    } catch (e) {}
+  }
+  M.src.push(s); if (!M.pgm) M.pgm = s; if (!M.pre) M.pre = s;
+  renderSrc(); return s;
+}
+function removeSrc(id) {
+  const s = M.src.find((x) => x.id === id); if (!s) return;
+  if (s.pc) { try { s.pc.close(); } catch (e) {} }
+  if (s.camId) { postJ("/ipcam/stop", JSON.stringify({ id: s.camId })).catch(() => {}); s.el.src = ""; }
+  if (s.stream) s.stream.getTracks().forEach((t) => t.stop()); else if (s.el.src) { try { s.el.pause(); } catch (e) {} URL.revokeObjectURL(s.el.src); }
+  M.src = M.src.filter((x) => x !== s); M.fade = null;
+  if (M.pgm === s) M.pgm = M.src[0] || null;
+  if (M.pre === s) M.pre = M.src.find((x) => x !== M.pgm) || M.pgm;
+  renderSrc();
+}
+function renderSrc() {
+  const box = $("#srcList");
+  $("#sSrc").textContent = M.src.length + " input" + (M.src.length === 1 ? "" : "s");
+  $("#preName").textContent = M.pre ? "· " + M.pre.name : ""; $("#pgmName").textContent = M.pgm ? "· " + M.pgm.name : "";
+  if (!M.src.length) { box.innerHTML = '<div class="empty">No inputs yet. Click “Add Input” to add a camera, capture card, screen, video or image.</div>'; return; }
+  box.innerHTML = "";
+  M.src.forEach((s, i) => {
+    const t = document.createElement("div"); t.className = "tile" + (s === M.pgm ? " pgm" : s === M.pre ? " pre" : "");
+    t.innerHTML = `<div class="th" title="${esc(s.warn || "")}"><b>${i + 1}</b><span>${esc(s.name)}${s.warn ? " ⚠" : ""}</span><i data-a="rm" data-id="${s.id}" title="Close this input">✕</i></div><div class="tv" data-a="pre" data-id="${s.id}"></div>${s.gain ? `<div class="meter sm"><i data-meter="${s.id}"></i></div>` : ""}
+      <div class="tb"><button data-a="cut" data-id="${s.id}">Cut</button><button data-a="fade" data-id="${s.id}">Fade</button>${s.gain ? `<button data-a="mute" data-id="${s.id}" class="${s.muted ? "on" : ""}">${s.muted ? "Muted" : "Audio"}</button>` : ""}</div>
+      ${s.gain ? `<input type="range" min="0" max="100" value="${Math.round(s.vol * 100)}" data-a="vol" data-id="${s.id}" title="Volume">` : ""}`;
+    s.el.className = "thumb"; t.querySelector(".tv").appendChild(s.el); box.appendChild(t);
+  });
+}
+$("#srcList").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-a]"); if (!b || b.dataset.a === "vol") return; const s = M.src.find((x) => x.id === +b.dataset.id); if (!s) return;
+  const a = b.dataset.a;
+  if (a === "rm") return removeSrc(s.id);
+  if (a === "pre") M.pre = s;
+  else if (a === "cut") { M.pre = s; cut(); return; }
+  else if (a === "fade") { M.pre = s; fadeTo(); }
+  else if (a === "mute" && s.gain) { s.muted = !s.muted; s.gain.gain.value = s.muted ? 0 : s.vol; }
+  renderSrc();
+});
+$("#srcList").addEventListener("input", (e) => { const s = M.src.find((x) => x.id === +e.target.dataset.id); if (s && s.gain && e.target.dataset.a === "vol") { s.vol = e.target.value / 100; if (!s.muted) s.gain.gain.value = s.vol; } });
+
+/* Add Input dialog */
+const openModal = (id) => ($(id).hidden = false), closeModals = () => document.querySelectorAll(".modal").forEach((m) => (m.hidden = true));
+document.querySelectorAll("[data-close]").forEach((b) => (b.onclick = closeModals));
+document.querySelectorAll(".modal").forEach((m) => m.addEventListener("mousedown", (e) => { if (e.target === m) closeModals(); }));
+$("#addInput").onclick = () => openModal("#addModal");
+document.querySelectorAll("#addModal .dl button").forEach((b) => (b.onclick = () => {
+  document.querySelectorAll("#addModal .dl button").forEach((x) => x.classList.toggle("on", x === b));
+  document.querySelectorAll("#addModal [data-p]").forEach((p) => (p.hidden = p.dataset.p !== b.dataset.t));
+}));
+async function findCams() {
+  try { (await navigator.mediaDevices.getUserMedia({ video: true, audio: true })).getTracks().forEach((t) => t.stop()); }
+  catch (e) { try { (await navigator.mediaDevices.getUserMedia({ video: true })).getTracks().forEach((t) => t.stop()); } catch (e2) { return toast("Camera permission was refused. Allow it and try again."); } }
+  const dv = await navigator.mediaDevices.enumerateDevices();
+  const opt = (d, f) => `<option value="${d.deviceId}">${esc(d.label || f)}</option>`;
+  $("#camSel").innerHTML = dv.filter((d) => d.kind === "videoinput").map((d) => opt(d, "Camera")).join("");
+  $("#audSel").innerHTML = '<option value="">No audio from this source</option>' + dv.filter((d) => d.kind === "audioinput").map((d) => opt(d, "Microphone")).join("");
+  if (!$("#camSel").options.length) toast("No cameras found. Check the cable or capture card.");
+}
+async function addCam() {
+  const vid = $("#camSel").value, aud = $("#audSel").value; if (!vid) return toast("Click “Find cameras” first.");
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: vid }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: aud ? { deviceId: { exact: aud }, echoCancellation: false, noiseSuppression: false } : false });
+    const el = document.createElement("video"); el.srcObject = stream; el.muted = true; el.playsInline = true; await el.play();
+    addSource($("#camSel").selectedOptions[0].text, el, stream); closeModals();
+  } catch (e) { toast("Could not open that camera. It may be in use by another program."); }
+}
+async function addScreen() {
+  try {
+    const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+    const el = document.createElement("video"); el.srcObject = stream; el.muted = true; await el.play();
+    const s = addSource("Screen", el, stream); stream.getVideoTracks()[0].onended = () => removeSrc(s.id); closeModals();
+  } catch (e) { toast("Screen capture was cancelled."); }
+}
+$("#camFind").onclick = findCams; $("#camAdd").onclick = addCam; $("#scrAdd").onclick = addScreen;
+$("#fileAdd").onclick = () => $("#fileIn").click();
+$("#fileIn").onchange = (e) => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  const url = URL.createObjectURL(f);
+  if (f.type.startsWith("image/")) { const el = new Image(); el.onload = () => { addSource(f.name, el, null); closeModals(); }; el.src = url; }
+  else { const el = document.createElement("video"); el.src = url; el.loop = true; el.playsInline = true; el.onloadeddata = () => { el.play(); addSource(f.name, el, null); closeModals(); }; }
+};
+
+/* compositor */
+function drawSrc(ctx, s, w, h, alpha) {
+  if (!s) return; const el = s.el, iw = el.videoWidth || el.naturalWidth, ih = el.videoHeight || el.naturalHeight; if (!iw) return;
+  const k = Math.min(w / iw, h / ih); ctx.globalAlpha = alpha; ctx.drawImage(el, (w - iw * k) / 2, (h - ih * k) / 2, iw * k, ih * k); ctx.globalAlpha = 1;
+}
+function wrapText(ctx, text, maxW) {
+  const out = [];
+  for (const para of text.split("\n")) { let line = ""; for (const wd of para.split(/\s+/)) { const t = line ? line + " " + wd : wd; if (ctx.measureText(t).width > maxW && line) { out.push(line); line = wd; } else line = t; } out.push(line); }
+  return out;
+}
+let ov = { key: "", lines: [], fs: 0 };
+function drawOverlay(ctx, w, h, st) {
+  if (!st || st.blank) return;
+  const text = st.kind === "text" ? st.text : st.verses.map((v) => (st.verses.length > 1 ? v.v + " " : "") + v.t).join(" ");
+  if (!text) return;
+  const lower = st.style === "lower", key = [text, lower, w, h].join("|");
+  if (ov.key !== key) {
+    let fs = h * (lower ? 0.045 : 0.075), lines; const maxW = w * (lower ? 0.86 : 0.8);
+    for (;;) { ctx.font = `${fs}px Georgia, serif`; lines = wrapText(ctx, text, maxW); if (lines.length * fs * 1.3 <= h * (lower ? 0.3 : 0.66) || fs < 14) break; fs *= 0.92; }
+    ov = { key, lines, fs };
+  }
+  const { lines, fs } = ov, lh = fs * 1.3, bh = lines.length * lh + fs * 1.9, y0 = lower ? h - bh - h * 0.05 : (h - bh) / 2;
+  if (lower) { ctx.fillStyle = "rgba(10,14,24,.88)"; ctx.fillRect(w * 0.04, y0, w * 0.92, bh); } else { ctx.fillStyle = "rgba(0,0,0,.55)"; ctx.fillRect(0, 0, w, h); }
+  ctx.font = `${fs}px Georgia, serif`; ctx.textBaseline = "top"; ctx.fillStyle = "#fff"; ctx.textAlign = lower ? "left" : "center";
+  const x = lower ? w * 0.06 : w / 2; lines.forEach((l, i) => ctx.fillText(l, x, y0 + fs * 0.4 + i * lh));
+  if (st.label) { ctx.font = `600 ${fs * 0.6}px system-ui, sans-serif`; ctx.fillStyle = "#9fd0ff"; ctx.fillText(st.label + (st.version ? " · " + st.version : ""), x, y0 + fs * 0.4 + lines.length * lh + fs * 0.1); }
+  ctx.textAlign = "left";
+}
+function frame() {
+  M.frames++;
+  const w = pgmC.width, h = pgmC.height, ctx = pgmC.getContext("2d");
+  ctx.fillStyle = "#000"; ctx.fillRect(0, 0, w, h);
+  if (M.fade) {
+    const t = Math.min(1, (performance.now() - M.fade.t0) / M.fade.ms);
+    drawSrc(ctx, M.fade.from, w, h, 1); drawSrc(ctx, M.fade.to, w, h, t);
+    if (t >= 1) { M.pre = M.fade.from; M.pgm = M.fade.to; M.fade = null; renderSrc(); }
+  } else drawSrc(ctx, M.pgm, w, h, 1);
+  drawLogo(ctx, w, h); drawName(ctx, w, h); drawCountdown(ctx, w, h);
+  if (M.overlay) drawOverlay(ctx, w, h, lastSt);
+  M.ftbA += ((M.ftb ? 1 : 0) - M.ftbA) * 0.18; if (M.ftbA > 0.01) { ctx.fillStyle = `rgba(0,0,0,${M.ftbA})`; ctx.fillRect(0, 0, w, h); }
+  if (document.body.classList.contains("mix")) { const p = preC.getContext("2d"); p.fillStyle = "#000"; p.fillRect(0, 0, preC.width, preC.height); drawSrc(p, M.pre, preC.width, preC.height, 1); }
+}
+// a steady timer (not requestAnimationFrame) so the program keeps drawing, and recording keeps working, when the window is covered or minimised
+setInterval(frame, 1000 / 30);
+
+/* transitions and overlay */
+function cut() { if (!M.pre || M.pre === M.pgm) return; const o = M.pgm; M.pgm = M.pre; M.pre = o; M.fade = null; renderSrc(); }
+function fadeTo() { if (!M.pre || M.pre === M.pgm || M.fade) return; M.fade = { from: M.pgm, to: M.pre, t0: performance.now(), ms: +$("#mDur").value }; }
+$("#mCut").onclick = cut; $("#mFade").onclick = fadeTo;
+$("#mFtb").onclick = () => { M.ftb = !M.ftb; $("#mFtb").classList.toggle("on", M.ftb); };
+$("#ov1").onclick = () => { M.overlay = !M.overlay; $("#ov1").classList.toggle("on", M.overlay); };
+$("#mRes").onchange = (e) => { const [w, h] = e.target.value.split("x"); pgmC.width = +w; pgmC.height = +h; ov.key = ""; $("#sRes").textContent = w + "×" + h; };
+$("#mWin").onclick = () => window.open(location.href.split("#")[0] + "#program", "sai-program", "popup,width=1280,height=720");
+$("#mFull").onclick = () => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen());
+document.addEventListener("keydown", (e) => {
+  if (!document.body.classList.contains("mix") || /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+  if (/^[1-9]$/.test(e.key) && M.src[+e.key - 1]) { M.pre = M.src[+e.key - 1]; renderSrc(); }
+  else if (e.key === "Enter") cut(); else if (e.key.toLowerCase() === "f") fadeTo();
+});
+
+/* recording (video + mixed audio to a .webm file) */
+const mmss = (ms) => { const s = Math.floor(ms / 1000); return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); };
+let recTimer = 0;
+$("#mRec").onclick = () => {
+  if (M.rec) { M.rec.stop(); return; }
+  audioInit(); if (M.ac.state === "suspended") M.ac.resume();
+  const st = new MediaStream([...window.SAI_STREAM.getVideoTracks(), ...M.dest.stream.getAudioTracks()]);
+  const mime = ["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"].find((m) => MediaRecorder.isTypeSupported(m));
+  const chunks = [], t0 = Date.now(), r = new MediaRecorder(st, { mimeType: mime, videoBitsPerSecond: 6000000 });
+  r.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+  r.onstop = () => {
+    clearInterval(recTimer); const blob = new Blob(chunks, { type: "video/webm" }); window.SAI_LAST = blob; M.rec = null;
+    $("#mRec").textContent = "● Record"; $("#mRec").classList.remove("rec"); $("#mRecInfo").textContent = "Saved " + (blob.size / 1048576).toFixed(1) + " MB";
+    const a = document.createElement("a"), d = new Date(); a.href = URL.createObjectURL(blob);
+    a.download = `service-${d.toISOString().slice(0, 16).replace(/[:T]/g, "-")}.webm`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  };
+  r.start(1000); M.rec = r; $("#mRec").textContent = "■ Stop"; $("#mRec").classList.add("rec");
+  recTimer = setInterval(() => ($("#mRecInfo").textContent = "● REC " + mmss(Date.now() - t0)), 500);
+};
+
+/* streaming to YouTube, Facebook, Twitch or any RTMP server (desktop app; FFmpeg does the encoding) */
+const PRESETS = { YouTube: "rtmp://a.rtmp.youtube.com/live2", Facebook: "rtmps://live-api-s.facebook.com:443/rtmp/", Twitch: "rtmp://live.twitch.tv/app", "Custom RTMP": "" };
+let SC = { dests: [0, 1, 2].map((i) => ({ on: false, plat: ["YouTube", "Facebook", "Twitch"][i], url: PRESETS[["YouTube", "Facebook", "Twitch"][i]], key: "" })), kbps: "2500", fps: "30" };
+try { const x = JSON.parse(localStorage.getItem("sai-stream")); if (x && x.dests) SC = Object.assign(SC, x); } catch (e) {}
+function renderDests() {
+  $("#dests").innerHTML = SC.dests.map((d, i) => `<div class="dest"><input type="checkbox" data-i="${i}" data-f="on" ${d.on ? "checked" : ""} title="Use this destination">
+    <select data-i="${i}" data-f="plat">${Object.keys(PRESETS).map((p) => `<option${p === d.plat ? " selected" : ""}>${p}</option>`).join("")}</select>
+    <input type="text" data-i="${i}" data-f="url" value="${esc(d.url)}" placeholder="Server URL (rtmp:// or rtmps://)"><input type="password" data-i="${i}" data-f="key" value="${esc(d.key)}" placeholder="Stream key"></div>`).join("");
+  $("#strQ").value = SC.kbps; $("#strFps").value = SC.fps;
+}
+$("#dests").addEventListener("change", (e) => {
+  const i = e.target.dataset.i, f = e.target.dataset.f; if (i === undefined) return; const d = SC.dests[i];
+  if (f === "on") d.on = e.target.checked; else if (f === "plat") { d.plat = e.target.value; d.url = PRESETS[d.plat]; renderDests(); } else d[f] = e.target.value;
+});
+const saveSC = () => { SC.kbps = $("#strQ").value; SC.fps = $("#strFps").value; try { localStorage.setItem("sai-stream", JSON.stringify(SC)); } catch (e) {} };
+function openStr() {
+  renderDests(); $("#strNote").textContent = DESK ? "" : "Streaming needs the desktop app. This web version can record but cannot stream.";
+  $("#strNote").hidden = DESK; openModal("#strModal");
+}
+$("#mStreamCfg").onclick = openStr; $("#strSave").onclick = () => { saveSC(); closeModals(); };
+$("#strGo").onclick = () => { saveSC(); closeModals(); startStream(); };
+$("#mStream").onclick = () => (M.str ? stopStream() : startStream());
+const postJ = (path, body) => fetch(path, { method: "POST", headers: { "X-SAI": "1" }, body });
+async function startStream() {
+  if (!DESK) { openStr(); return; }
+  const urls = SC.dests.filter((d) => d.on && d.url && d.key.trim()).map((d) => d.url.trim().replace(/\/+$/, "") + "/" + d.key.trim());
+  if (!urls.length) { openStr(); return toast("Turn on at least one destination and enter its stream key."); }
+  const r = await postJ("/stream/start", JSON.stringify({ urls, kbps: +SC.kbps, fps: +SC.fps }));
+  if (!r.ok) { const e = await r.json().catch(() => ({})); return toast(e.error || "Could not start streaming.", 8000); }
+  audioInit(); if (M.ac.state === "suspended") M.ac.resume();
+  const ms = new MediaStream([...window.SAI_STREAM.getVideoTracks(), ...M.dest.stream.getAudioTracks()]);
+  const mime = ["video/webm;codecs=vp8,opus", "video/webm"].find((m) => MediaRecorder.isTypeSupported(m));
+  const s = (M.str = { rec: new MediaRecorder(ms, { mimeType: mime, videoBitsPerSecond: Math.round(+SC.kbps * 1500) }), chain: Promise.resolve(), n: urls.length });
+  s.rec.ondataavailable = (e) => { if (e.data.size) s.chain = s.chain.then(() => postJ("/stream/chunk", e.data).then((x) => { if (x.status === 409) throw 0; })).catch(() => { if (M.str === s) stopStream(true); }); };
+  s.rec.start(250);
+  $("#mStream").textContent = "■ Stop stream"; $("#mStream").classList.add("rec");
+  s.poll = setInterval(async () => {
+    let j; try { j = await (await fetch("/stream/status")).json(); } catch (e) { return; }
+    if (!j.running) return stopStream(true, j.error);
+    const sp = /speed=\s*([\d.]+)x/.exec(j.last), slow = sp && +sp[1] < 0.9;
+    $("#sStream").innerHTML = `<b style="color:#ff5252">● LIVE ${mmss(j.seconds * 1000)}</b> · ${s.n} destination${s.n > 1 ? "s" : ""}${sp ? " · speed " + sp[1] + "x" : ""}${slow ? " ⚠ too slow for this connection, lower the bitrate" : ""}${j.error ? " ⚠ " + esc(j.error.slice(0, 90)) : ""}`;
+  }, 1000);
+}
+async function stopStream(failed, why) {
+  const s = M.str; if (!s) return; M.str = null; clearInterval(s.poll); try { s.rec.stop(); } catch (e) {}
+  await postJ("/stream/stop", "").catch(() => {});
+  $("#mStream").textContent = "Stream"; $("#mStream").classList.remove("rec"); $("#sStream").textContent = "";
+  if (failed) toast("Streaming stopped. " + (why || "The connection to the streaming server was lost."), 10000);
+}
+
+/* status bar */
+let fc = 0; setInterval(() => { $("#sFps").textContent = "FPS " + (M.frames - fc); fc = M.frames; }, 1000);
+$("#sRes").textContent = pgmC.width + "×" + pgmC.height;
+
+/* meters and master mixer */
+const mbuf = new Uint8Array(1024);
+const peakOf = (an) => { if (!an) return 0; const b = mbuf.subarray(0, an.fftSize); an.getByteTimeDomainData(b); let m = 0; for (let i = 0; i < b.length; i++) { const v = Math.abs(b[i] - 128); if (v > m) m = v; } return m / 128; };
+const meterSet = (el, v) => { el.style.width = Math.min(100, v * 130) + "%"; el.style.background = v > 0.9 ? "#e03131" : v > 0.7 ? "#f0b429" : "#2f9e44"; };
+setInterval(() => {
+  if (!M.ac) return; M.peak = Math.max(peakOf(M.masterAn), (M.peak || 0) * 0.8);
+  for (const s of M.src) s.peak = Math.max(peakOf(s.an), (s.peak || 0) * 0.8);
+  if (!document.body.classList.contains("mix")) return;
+  meterSet($("#mMeter"), M.peak); document.querySelectorAll("[data-meter]").forEach((el) => { const s = M.src.find((x) => x.id === +el.dataset.meter); if (s) meterSet(el, s.peak || 0); });
+}, 100);
+$("#mVol").oninput = (e) => { audioInit(); M.mix.gain.value = e.target.value / 100; };
+$("#mMon").onchange = (e) => { audioInit(); if (e.target.checked) M.mix.connect(M.ac.destination); else M.mix.disconnect(M.ac.destination); };
+
+/* overlays 2-4: logo, countdown, name and title */
+M.logo = { on: false, img: null, pos: "tr", size: 15 }; M.cd = { on: false, label: "", mins: 10, end: 0 }; M.nm = { on: false, name: "", title: "" };
+const setLogo = (url) => { const i = new Image(); i.onload = () => (M.logo.img = i); i.src = url; }; M.setLogo = setLogo;
+$("#ovCfg").onclick = () => openModal("#ovModal");
+for (const [id, o] of [["#ov2", M.logo], ["#ov3", M.cd], ["#ov4", M.nm]]) $(id).onclick = () => { o.on = !o.on; $(id).classList.toggle("on", o.on); };
+$("#logoPick").onclick = () => $("#logoIn").click();
+$("#logoIn").onchange = (e) => { const f = e.target.files[0]; e.target.value = ""; if (!f) return; const r = new FileReader(); r.onload = () => { setLogo(r.result); if (!M.logo.on) $("#ov2").click(); }; r.readAsDataURL(f); };
+$("#logoPos").onchange = (e) => (M.logo.pos = e.target.value); $("#logoSize").onchange = (e) => (M.logo.size = +e.target.value);
+$("#cdLabel").oninput = (e) => (M.cd.label = e.target.value); $("#cdMin").oninput = (e) => { M.cd.mins = Math.max(1, +e.target.value || 1); M.cd.end = 0; };
+$("#cdStart").onclick = () => { M.cd.end = Date.now() + M.cd.mins * 60000; if (!M.cd.on) $("#ov3").click(); }; $("#cdReset").onclick = () => (M.cd.end = 0);
+$("#nmName").oninput = (e) => (M.nm.name = e.target.value); $("#nmTitle").oninput = (e) => (M.nm.title = e.target.value);
+function drawLogo(ctx, w, h) {
+  const L = M.logo; if (!L.on || !L.img || !L.img.naturalWidth) return;
+  const pw = (w * L.size) / 100, ph = (pw * L.img.naturalHeight) / L.img.naturalWidth, m = w * 0.025;
+  ctx.drawImage(L.img, L.pos.includes("r") ? w - pw - m : m, L.pos.includes("b") ? h - ph - m : m, pw, ph);
+}
+function drawName(ctx, w, h) {
+  const N = M.nm; if (!N.on || !N.name) return; const fs = h * 0.05;
+  ctx.font = `700 ${fs}px system-ui, sans-serif`; const nw = ctx.measureText(N.name).width; ctx.font = `${fs * 0.62}px system-ui, sans-serif`; const tw = N.title ? ctx.measureText(N.title).width : 0;
+  const bw = Math.max(nw, tw) + fs * 1.6, bh = fs * (N.title ? 2.1 : 1.5), x = w * 0.04, y = h * 0.8 - bh;
+  ctx.fillStyle = "rgba(10,14,24,.9)"; ctx.fillRect(x, y, bw, bh); ctx.fillStyle = "#4da3ff"; ctx.fillRect(x, y, fs * 0.16, bh);
+  ctx.textBaseline = "top"; ctx.fillStyle = "#fff"; ctx.font = `700 ${fs}px system-ui, sans-serif`; ctx.fillText(N.name, x + fs * 0.6, y + fs * 0.25);
+  if (N.title) { ctx.fillStyle = "#9fd0ff"; ctx.font = `${fs * 0.62}px system-ui, sans-serif`; ctx.fillText(N.title, x + fs * 0.6, y + fs * 1.3); }
+}
+function drawCountdown(ctx, w, h) {
+  const C = M.cd; if (!C.on) return; const ms = C.end ? Math.max(0, C.end - Date.now()) : C.mins * 60000, t = mmss(Math.ceil(ms / 1000) * 1000), fs = h * 0.11;
+  ctx.font = `700 ${fs}px system-ui, sans-serif`; const tw = ctx.measureText(t).width; ctx.font = `${fs * 0.36}px system-ui, sans-serif`; const lw = C.label ? ctx.measureText(C.label).width : 0;
+  const bw = Math.max(tw, lw) + fs, bh = fs * (C.label ? 1.75 : 1.3), x = (w - bw) / 2, y = h * 0.06;
+  ctx.fillStyle = "rgba(10,14,24,.85)"; ctx.fillRect(x, y, bw, bh); ctx.textAlign = "center"; ctx.textBaseline = "top"; ctx.fillStyle = "#9fd0ff";
+  if (C.label) { ctx.font = `${fs * 0.36}px system-ui, sans-serif`; ctx.fillText(C.label, w / 2, y + fs * 0.15); }
+  ctx.fillStyle = C.end && ms === 0 ? "#ff6b6b" : "#fff"; ctx.font = `700 ${fs}px system-ui, sans-serif`; ctx.fillText(t, w / 2, y + (C.label ? fs * 0.6 : fs * 0.12)); ctx.textAlign = "left";
+}
+
+/* screen and window picker (desktop app) */
+async function addDesktop(id, name, audio) {
+  try {
+    const m = { chromeMediaSource: "desktop", chromeMediaSourceId: id };
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: audio ? { mandatory: { chromeMediaSource: "desktop" } } : false, video: { mandatory: Object.assign({ maxWidth: 1920, maxHeight: 1080, maxFrameRate: 30 }, m) } });
+    const el = document.createElement("video"); el.srcObject = stream; el.muted = true; await el.play(); addSource(name, el, stream); closeModals();
+  } catch (e) { toast("Could not capture that screen or window."); }
+}
+M.addDesktop = addDesktop;
+if (window.sai) { $("#scrWeb").hidden = true; $("#scrDesk").hidden = false; }
+$("#scrList").onclick = async () => { $("#scrGrid").innerHTML = "Looking…"; const l = await window.sai.sources(); $("#scrGrid").innerHTML = l.map((x) => `<div class="sc" data-id="${esc(x.id)}" data-n="${esc(x.name)}"><img src="${x.thumb}"><span>${esc(x.name)}</span></div>`).join(""); };
+$("#scrGrid").onclick = (e) => { const c = e.target.closest(".sc"); if (c) addDesktop(c.dataset.id, c.dataset.n, $("#scrAud").checked && c.dataset.id.startsWith("screen")); };
+
+/* IP cameras (RTSP) */
+if (!DESK) { $("#ipDesk").hidden = true; $("#ipWeb").hidden = false; $("#phDesk").hidden = true; $("#phWeb").hidden = false; }
+$("#ipAdd").onclick = async () => {
+  const url = $("#ipUrl").value.trim(), name = $("#ipName").value.trim() || "IP camera", id = "c" + Date.now().toString(36);
+  const r = await postJ("/ipcam/start", JSON.stringify({ id, url })); if (!r.ok) { const e = await r.json().catch(() => ({})); return toast(e.error || "Could not start that camera.", 7000); }
+  const el = new Image(); el.src = "/ipcam/" + id + ".mjpeg"; addSource(name, el, null).camId = id; closeModals();
+};
+setInterval(async () => {
+  if (!DESK || !M.src.some((s) => s.camId)) return;
+  try { const j = await (await fetch("/ipcam/status")).json(); let ch = false; for (const s of M.src) if (s.camId && (s.warn || "") !== (j[s.camId] || "")) { s.warn = j[s.camId] || ""; ch = true; } if (ch) renderSrc(); } catch (e) {}
+}, 3000);
+
+/* phone cameras (WebRTC over your own Wi-Fi) */
+const waitIce = (pc) => new Promise((r) => { if (pc.iceGatheringState === "complete") return r(); pc.onicegatheringstatechange = () => pc.iceGatheringState === "complete" && r(); setTimeout(r, 3000); });
+$("#phMake").onclick = async () => {
+  const r = await (await postJ("/rtc/room", "")).json();
+  if (!r.ok) return toast("Phone cameras are unavailable: " + (r.error || "the secure phone server could not start."), 8000);
+  M.phone = r; $("#phBox").hidden = false; $("#phUrl").textContent = r.url; $("#phQr").src = "/qr.svg?text=" + encodeURIComponent(r.url); phonePoll(r.code);
+};
+async function phonePoll(code) {
+  let after = 0; M.phoneCode = code;
+  while (M.phoneCode === code) {
+    try { for (const m of await (await fetch(`/rtc/recv?room=${code}&as=desk&after=${after}`)).json()) { after = m.i; const d = JSON.parse(m.data); if (d.type === "offer") acceptPhone(code, d); } }
+    catch (e) { await new Promise((r) => setTimeout(r, 2000)); }
+  }
+}
+async function acceptPhone(code, d) {
+  try {
+    const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+    await pc.setRemoteDescription({ type: "offer", sdp: d.sdp }); await pc.setLocalDescription(await pc.createAnswer()); await waitIce(pc);
+    await postJ("/rtc/send?room=" + code, JSON.stringify({ type: "answer", sdp: pc.localDescription.sdp }));
+    const stream = new MediaStream(pc.getReceivers().map((r) => r.track));
+    const el = document.createElement("video"); el.srcObject = stream; el.muted = true; el.playsInline = true; el.play().catch(() => {});
+    const a = new Audio(); a.muted = true; a.srcObject = stream; a.play().catch(() => {}); // keeps the phone's sound flowing into the mixer
+    const s = addSource("📱 " + (d.name || "Phone"), el, stream); s.pc = pc; closeModals();
+    pc.onconnectionstatechange = () => { const st = pc.connectionState; if (st === "failed" || st === "closed") removeSrc(s.id); else if (st === "disconnected") setTimeout(() => pc.connectionState === "disconnected" && removeSrc(s.id), 8000); };
+  } catch (e) { toast("A phone tried to connect but the link failed."); }
+}
+
 /* ---------- online / offline indicator ---------- */
+
 function net() { const on = navigator.onLine; $("#netPill").textContent = on ? "Online" : "Offline mode"; $("#netPill").className = "pill " + (on ? "on" : "off"); }
 addEventListener("online", net); addEventListener("offline", net); net();
 
 /* ---------- translations ---------- */
 const addBible = (file) => (bibles[file.id] = new Bible(file));
-const indexBible = (id) => { if (!matchers[id]) matchers[id] = new QuoteMatcher(bibles[id]); };
+const indexBible = (id) => { if (!INDEX_SKIP.has(id) && !matchers[id]) matchers[id] = new QuoteMatcher(bibles[id]); };
 // quotes are matched against every loaded translation, then shown in the selected one
 const multi = { find: (t, o) => { let best = null; for (const k in matchers) { const r = matchers[k].find(t, o); if (r && (!best || r.score > best.score)) best = r; } return best; } };
 function fillVer() { $("#ver").innerHTML = Object.values(bibles).map((b) => `<option value="${b.id}">${esc(b.id.toUpperCase())} · ${esc(b.name)}</option>`).join(""); if (bible) $("#ver").value = bible.id; }
@@ -549,7 +1002,8 @@ $("#verFile").onchange = async (e) => {
   });
   $("#loading").style.display = "none";
   publish(); setMicUI(); renderLib(); renderPlan();
-  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("sw.js").catch(() => {});
+  if (location.hostname === "127.0.0.1") { const h = $("#obsHint"); h.hidden = false; h.innerHTML = "vMix / OBS Browser Source link: <b style=\"user-select:all\">" + location.origin + "/index.html#output</b>"; }
+  if ("serviceWorker" in navigator && (location.protocol === "https:")) navigator.serviceWorker.register("sw.js").catch(() => {});
 })();
 })();
 </script>
