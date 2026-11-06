@@ -141,6 +141,7 @@ body[data-max=pre] .view,body[data-max=out] .view{flex:1;aspect-ratio:auto;heigh
 body[data-max=tiles] .tiles{flex:1;min-height:0}
 body[data-max=dock] .right,body[data-max=audio] .right{grid-template-rows:minmax(0,1fr)}
 body[data-max=audio] .strip{width:110px}
+.meter-h{flex:1;height:14px;background:#0a0c10;border:1px solid #2a3140;overflow:hidden;min-width:120px}.meter-h i{display:block;height:100%;width:0;background:#2fd26a}
 
 </style>
 </head>
@@ -296,7 +297,7 @@ body[data-max=audio] .strip{width:110px}
 </div></div>
 
 <div class="modal" id="setModal" hidden><div class="dlg lg"><div class="dh">Settings<button data-close>✕</button></div>
-  <div class="tabs2" id="setTabs"><button data-st="str" class="on">Streaming</button><button data-st="rec">Recording</button><button data-st="keys">Keyboard shortcuts</button><button data-st="vid">Video</button></div>
+  <div class="tabs2" id="setTabs"><button data-st="str" class="on">Streaming</button><button data-st="rec">Recording</button><button data-st="keys">Keyboard shortcuts</button><button data-st="voice">Voice</button><button data-st="vid">Video</button></div>
   <div class="dbody">
     <div data-sp="str"><p id="strNote" style="color:var(--orange);margin:0 0 10px" hidden></p><div id="dests"></div>
       <p class="note">Paste the server URL and stream key from each platform’s live-streaming page. Twitch shows a list of nearby servers to choose from. Use the eye button to show or hide a key. Keys are saved on this PC only.</p>
@@ -309,6 +310,11 @@ body[data-max=audio] .strip{width:110px}
       <label class="fld">Quality<select id="recQ"><option value="4000">Good (4 Mbps)</option><option value="8000">High (8 Mbps)</option><option value="12000">Very high (12 Mbps)</option></select></label>
       <p id="recNote" class="note" style="margin-top:10px"></p><div class="row"><button id="recSave" class="primary">Save</button></div></div>
     <div data-sp="keys" hidden><p class="note" style="margin-top:0">Click <b>Set</b>, then press the key (or key combination) you want. Shortcuts work whenever you are not typing in a box.</p><table class="kt" id="keyTbl"></table><div class="row"><button id="keyReset">Reset all to defaults</button></div></div>
+    <div data-sp="voice" hidden>
+      <label class="fld">Microphone for voice recognition<div class="row" style="margin:0"><select id="voMic" style="flex:1"></select><button id="voRefresh">↻ Refresh</button></div></label>
+      <div class="row"><div class="meter-h"><i id="voLevel"></i></div><button id="voTest">Test microphone</button></div>
+      <p id="voEngine" class="note" style="margin-top:12px"></p><p id="voNote" class="note"></p>
+      <div class="row"><button id="voSave" class="primary">Save</button></div></div>
     <div data-sp="vid" hidden><label class="fld">Output resolution (program, recording and streaming)<select id="mRes"><option value="1280x720">1280 × 720 (720p)</option><option value="1920x1080">1920 × 1080 (1080p)</option></select></label><p class="note" style="margin-top:10px">720p is recommended for most computers and internet connections.</p></div>
   </div>
 </div></div>
@@ -731,7 +737,7 @@ function audioInit() {
   if (M.ac) return;
   const ac = (M.ac = new (window.AudioContext || window.webkitAudioContext)());
   M.dest = ac.createMediaStreamDestination(); M.bus = ac.createGain(); M.mix = ac.createGain(); M.mix.connect(M.dest);
-  M.masterAn = ac.createAnalyser(); M.masterAn.fftSize = 512; M.mix.connect(M.masterAn);
+  M.masterAn = ac.createAnalyser(); M.masterAn.fftSize = 4096; M.mix.connect(M.masterAn);
   const o = ac.createOscillator(), g = ac.createGain(); g.gain.value = 0; o.connect(g); g.connect(M.dest); o.start(); // keeps audio flowing so recorders always write
   M.ready = ac.audioWorklet.addModule(URL.createObjectURL(new Blob([WORKLET], { type: "text/javascript" })))
     .then(() => { M.master = makeStrip(); M.bus.connect(M.master.in); M.master.out.connect(M.mix); })
@@ -766,19 +772,19 @@ function wantAudio(s, mk) {
 }
 function attach(s, node) {
   const ac = M.ac; s.node = node; s.strip = makeStrip(); node.connect(s.strip.in);
-  s.fader = ac.createGain(); s.strip.out.connect(s.fader); s.fader.connect(M.bus); s.an = ac.createAnalyser(); s.an.fftSize = 512; s.fader.connect(s.an); setFader(s);
+  s.fader = ac.createGain(); s.strip.out.connect(s.fader); s.fader.connect(M.bus); s.an = ac.createAnalyser(); s.an.fftSize = 4096; s.fader.connect(s.an); setFader(s);
 }
 const setFader = (s) => { if (s.fader) s.fader.gain.value = s.muted ? 0 : faderGain(s.vol); };
 function setMasterFader() { audioInit(); M.mix.gain.value = M.mutedMaster ? 0 : faderGain(M.mixP); }
-const mbuf = new Uint8Array(1024);
+const mbuf = new Uint8Array(4096); // each meter reads ~85 ms of sound, so a short peak between two readings is never missed
 const peakOf = (an) => { if (!an) return 0; const b = mbuf.subarray(0, an.fftSize); an.getByteTimeDomainData(b); let m = 0; for (let i = 0; i < b.length; i++) { const v = Math.abs(b[i] - 128); if (v > m) m = v; } return m / 128; };
 const meterFill = (el, v, vertical) => { const db = v > 0 ? 20 * Math.log10(v) : -90, f = clamp((db + 60) / 60, 0, 1) * 100; el.style[vertical ? "height" : "width"] = f + "%"; el.style.background = db > -3 ? "#ff4d5a" : db > -12 ? "#f5c542" : "#2fd26a"; };
-setInterval(() => {
+setInterval(() => { try {
   if (!M.ac) return; M.peak = Math.max(peakOf(M.masterAn), (M.peak || 0) * 0.8);
   for (const s of M.src) s.peak = Math.max(peakOf(s.an), (s.peak || 0) * 0.8);
   document.querySelectorAll("[data-m]").forEach((el) => { const id = el.dataset.m; meterFill(el, id === "master" ? M.peak : (M.src.find((x) => x.id === +id) || {}).peak || 0, true); });
   document.querySelectorAll("[data-tm]").forEach((el) => { const s = M.src.find((x) => x.id === +el.dataset.tm); if (s) meterFill(el, s.peak || 0, false); });
-}, 100);
+} catch (e) { console.error("meter:", e && e.message); } }, 100);
 function renderStrips() {
   const box = $("#strips"); if (!box) return;
   const mk = (id, name, p, muted, master) => `<div class="strip${master ? " master" : ""}"><div class="sn" title="${esc(name)}">${esc(name)}</div><div class="sbody"><div class="mtr"><i data-m="${id}"></i></div><input type="range" class="fader" min="0" max="100" value="${p}" data-a="fader" data-id="${id}"></div><div class="sdb" data-db="${id}">${faderDb(p)} dB</div><div class="sbt"><button class="mt${muted ? " on" : ""}" data-a="smute" data-id="${id}">M</button><button data-a="sfx" data-id="${id}">FX</button></div></div>`;
@@ -1371,7 +1377,7 @@ function openSettings(t = "str") {
   document.querySelectorAll("#setTabs button").forEach((b) => b.classList.toggle("on", b.dataset.st === t));
   document.querySelectorAll("[data-sp]").forEach((p) => (p.hidden = p.dataset.sp !== t));
   if (t === "str") { renderDests(); $("#strNote").textContent = DESK ? "" : "Streaming needs the desktop app. This web version can record but cannot stream."; $("#strNote").hidden = DESK; }
-  if (t === "rec") fillRec(); if (t === "keys") renderKeys(); openModal("#setModal");
+  if (t === "rec") fillRec(); if (t === "keys") renderKeys(); if (t === "voice") fillVoice(); openModal("#setModal");
 }
 document.querySelectorAll("#setTabs button").forEach((b) => (b.onclick = () => openSettings(b.dataset.st)));
 $("#mSettings").onclick = () => openSettings("str"); $("#mStreamCfg").onclick = () => openSettings("str");
@@ -1525,6 +1531,59 @@ document.querySelectorAll(".xp").forEach((b) => (b.onclick = () => setMax(docume
 document.addEventListener("dblclick", (e) => { const h = e.target.closest(".mh,.ah,.thead,.dtabs"); if (!h || e.target.closest("button,input,select,label")) return; const x = h.querySelector(".xp"); if (x) x.click(); });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.dataset.max && !document.querySelector(".modal:not([hidden])") && !/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) setMax(null); });
 addEventListener("resize", applyLayout); window.SAI_LAYOUT = { get: () => LAY, setMax }; applyLayout();
+
+
+/* ---------- voice: offline speech recognition (desktop app) and microphone choice ---------- */
+let VC = { mic: "" }; try { VC = Object.assign(VC, JSON.parse(localStorage.getItem("sai-voice"))); } catch (e) {}
+const V = { on: false }; window.SAI_VOICE = V;
+const PCM_WORKLET = `class P extends AudioWorkletProcessor{constructor(){super();this.b=new Float32Array(1600);this.n=0}process(i){const c=i[0][0];if(!c)return true;for(let k=0;k<c.length;k++){this.b[this.n++]=c[k];if(this.n===1600){this.port.postMessage(this.b.slice(0));this.n=0}}return true}}registerProcessor("sai-pcm",P)`;
+async function fillVoice() {
+  const sel = $("#voMic"); let dv = [];
+  try {
+    dv = await navigator.mediaDevices.enumerateDevices();
+    if (!dv.some((d) => d.kind === "audioinput" && d.label) && !V.on) { try { (await navigator.mediaDevices.getUserMedia({ audio: true })).getTracks().forEach((t) => t.stop()); } catch (e) {} dv = await navigator.mediaDevices.enumerateDevices(); }
+  } catch (e) {}
+  const mics = dv.filter((d) => d.kind === "audioinput" && d.deviceId !== "default" && d.deviceId !== "communications");
+  sel.innerHTML = '<option value="">Default microphone (the one set in Windows)</option>' + mics.map((d, i) => `<option value="${d.deviceId}">${esc(d.label || "Microphone " + (i + 1))}</option>`).join("");
+  sel.value = [...sel.options].some((o) => o.value === VC.mic) ? VC.mic : "";
+  $("#voNote").textContent = mics.length ? `${mics.length} microphone${mics.length === 1 ? "" : "s"} found.` : "No microphone found. Plug one in and press Refresh.";
+  if (DESK) { try { const s = await (await fetch("/stt/status")).json(); $("#voEngine").textContent = s.available ? "Voice engine: built-in offline English recognition. It works with no internet. Speak clearly and close to the microphone." : "The offline voice model files are missing from this copy of the app."; } catch (e) { $("#voEngine").textContent = "Voice engine is not available."; } }
+  else $("#voEngine").textContent = "Voice engine: your browser’s speech recognition (needs internet; Chrome or Edge). The microphone is chosen in the browser or in Windows. The desktop app has a built-in offline engine and lets you pick the microphone here.";
+  sel.disabled = !DESK;
+}
+$("#voRefresh").onclick = fillVoice;
+let voTest = null;
+$("#voTest").onclick = async () => {
+  if (voTest) { voTest.stop(); return; }
+  try {
+    const st = await navigator.mediaDevices.getUserMedia({ audio: { deviceId: $("#voMic").value ? { exact: $("#voMic").value } : undefined, echoCancellation: false, noiseSuppression: false } });
+    const ac = new AudioContext(), an = ac.createAnalyser(); an.fftSize = 512; ac.createMediaStreamSource(st).connect(an); const bar = $("#voLevel"); $("#voTest").textContent = "Stop test";
+    const iv = setInterval(() => meterFill(bar, peakOf(an), false), 80);
+    voTest = { stop: () => { clearInterval(iv); st.getTracks().forEach((t) => t.stop()); ac.close(); bar.style.width = "0"; $("#voTest").textContent = "Test microphone"; voTest = null; } }; setTimeout(() => voTest && voTest.stop(), 15000);
+  } catch (e) { toast(permHint(e), 8000); }
+};
+$("#voSave").onclick = () => { VC.mic = $("#voMic").value; try { localStorage.setItem("sai-voice", JSON.stringify(VC)); } catch (e) {} if (voTest) voTest.stop(); closeModals(); if (V.on) { stopVoice(); setTimeout(startVoice, 400); } };
+async function startVoice() {
+  if (V.on) return;
+  const r = await postJ("/stt/start", ""), j = await r.json().catch(() => ({}));
+  if (!r.ok) return toast("Voice recognition could not start: " + (j.error || "unknown problem"), 9000);
+  let stream; const base = { channelCount: 1, echoCancellation: false, noiseSuppression: false, autoGainControl: true };
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: VC.mic ? Object.assign({ deviceId: { exact: VC.mic } }, base) : base }); }
+  catch (e) { try { stream = await navigator.mediaDevices.getUserMedia({ audio: base }); toast("The chosen microphone could not be opened, so the default microphone is used.", 6000); } catch (e2) { await postJ("/stt/stop", ""); return toast(permHint(e2), 9000); } }
+  const ac = new AudioContext({ sampleRate: 16000 }); await ac.audioWorklet.addModule(URL.createObjectURL(new Blob([PCM_WORKLET], { type: "text/javascript" })));
+  const node = new AudioWorkletNode(ac, "sai-pcm", { numberOfOutputs: 0 }); ac.createMediaStreamSource(stream).connect(node);
+  let chain = Promise.resolve(), backlog = 0;
+  node.port.onmessage = (e) => { if (backlog > 40) return; backlog++; chain = chain.then(() => postJ("/stt/audio", e.data.buffer)).catch(() => {}).then(() => backlog--); };
+  const es = new EventSource("/stt/events");
+  es.onmessage = (m) => { const o = JSON.parse(m.data); if (o.t === "partial") { $("#interim").textContent = o.text; feed(o.text, false); } else { $("#interim").textContent = ""; addTranscript(o.text.charAt(0).toUpperCase() + o.text.slice(1)); feed(o.text, true); } };
+  Object.assign(V, { on: true, stream, ac, node, es }); listening = true; setMicUI(); $("#micPill").textContent = "● Listening (offline)";
+}
+function stopVoice() {
+  if (!V.on) return; V.on = false; try { V.es.close(); V.node.disconnect(); V.ac.close(); V.stream.getTracks().forEach((t) => t.stop()); } catch (e) {}
+  postJ("/stt/stop", "").catch(() => {}); $("#interim").textContent = ""; listening = false; setMicUI();
+}
+$("#micBtn").onclick = () => { if (!DESK) return listening ? stopMic() : startMic(); return V.on ? stopVoice() : startVoice(); };
+if (DESK) { $("#lang").hidden = true; $("#micBtn").title = "Offline voice recognition (built into the app)"; }
 
 /* ---------- online / offline indicator ---------- */
 
